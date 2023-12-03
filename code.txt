@@ -1,0 +1,39 @@
+listbox.delete(0, 'end')
+
+headers = {
+    'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.82 Safari/537.36',
+    'x-api-key': 'XqTqBBp9l2oJI0HF91yT',
+    'Authorization': 'Bearer 475964|tbJTl4oNJqyguwlDhJz0dnLr2k8nRKh0Y9FFVZkt'
+}
+try:
+    response = requests.post("https://shenas.vsrv.ir/api/callerId?mobile=" + mobileNumber, headers=headers,
+                             timeout=30)
+
+    status = int(response.status_code)
+    if status == 200:
+        response_json = response.json()
+        if len(response_json['data']) > 0:
+            for item in response_json['data']:
+                listbox.insert('end', item['first_name'] + " " + item['last_name'])
+        else:
+            listbox.insert('end', "!نتیجه ای یافت نشد")
+
+    response.raise_for_status()
+
+except requests.exceptions.HTTPError as e:
+    if e.response.status_code is not None:
+        listbox.insert('end', "!نتیجه ای یافت نشد")
+
+except requests.exceptions.ConnectionError as e:
+    messagebox.showwarning('خطا', 'مشکلی در اتصال به وجود آمد! دوباره تلاش کنید')
+
+except requests.exceptions.Timeout as e:
+    messagebox.showwarning('خطا', 'مهلت اتصال به پایان رسید! دوباره تلاش کنید')
+
+except requests.exceptions.RequestException as e:
+    messagebox.showwarning('خطا', 'ممکن است مشکلی در درخواست باشد! دوباره تلاش کنید')
+
+except Exception as e:
+    messagebox.showwarning('خطا', 'خطای نامشخص! دوباره تلاش کنید')
+
+search_button.configure(text="جستجو", state="normal", cursor="hand2")
